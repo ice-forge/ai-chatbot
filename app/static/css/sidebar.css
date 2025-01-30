@@ -1,0 +1,356 @@
+/* Sidebar Core */
+
+.sidebar {
+    width: 300px;
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Header Section */
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    background-color: #2c2c2c;
+    font-size: 18px;
+    font-weight: 600;
+    transition: background-color 0.3s;
+    cursor: pointer;
+}
+
+.sidebar-header:hover {
+    background-color: #3c3c3c;
+}
+
+/* New Conversation Button */
+
+.new_conversation-button {
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    border: none;
+    padding: 12px;
+    margin: 0px auto 0 auto;
+    width: 85%;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    font-weight: bold;
+}
+
+.new_conversation-button:hover {
+    background-color: #555;
+}
+
+.new-chat-text {
+    order: 2;
+    margin-left: 12px;
+}
+
+.new-conversation-ai-icon-container {
+    order: 1;
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.new-conversation-ai-icon {
+    width: 25px;
+    height: 25px;
+    object-fit: contain;
+    flex-shrink: 0;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.new-conversation-icon {
+    order: 3;
+    width: 20px;
+    height: 20px;
+    filter: invert(1);
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+/* Conversation List & Items */
+
+#conversation-list {
+    flex: 1;
+    overflow-y: auto;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 4px;
+    margin-right: 5px;
+}
+
+/* Scrollbar Styling */
+
+#conversation-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+#conversation-list::-webkit-scrollbar-track {
+    background: #1e1e1e;
+    border-radius: 10px;
+}
+
+#conversation-list::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 10px;
+}
+
+#conversation-list::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Conversation Button */
+
+.conversation-button {
+    width: 85%;
+    margin: 4px 0;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 5px;
+    background-color: transparent;
+    color: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    position: relative;
+    border: 1px solid #444;
+    box-sizing: border-box;
+    justify-content: space-between;
+}
+
+.conversation-button span {
+    flex: 1;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.conversation-button:hover {
+    background-color: #2c2c2c;
+    border-color: #666;
+}
+
+.conversation-button.selected {
+    background-color: #2c2c2c;
+    border-color: #666;
+}
+
+.conversation-item {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+}
+
+.hover-icons {
+    display: none;
+    gap: 8px;
+    margin-left: 8px;
+    align-items: center;
+}
+
+.conversation-button:hover .hover-icons {
+    display: flex;
+}
+
+.hover-icon {
+    width: 16px;
+    height: 16px;
+    padding: 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: invert(1);
+    opacity: 0.7;
+}
+
+.hover-icon.edit-icon:hover {
+    background-color: #888;
+    filter: invert(1);
+    opacity: 1;
+}
+
+.hover-icon.delete-icon:hover {
+    background-color: #888;
+    opacity: 1;
+}
+
+/* Search Bar */
+
+.search-section {
+    overflow: hidden;
+    height: auto;
+    background: #2c2c2c;
+    padding: 10px;
+    animation: slideDown 0.3s forwards;
+}
+
+.search-container {
+    width: 95%;
+    margin: 10px auto 0 auto;;
+    position: sticky;
+    top: 0;
+    background-color: #1e1e1e;
+    z-index: 10;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    border-radius: 5px;
+    padding: 8px 12px;
+    position: relative;
+}
+
+.search-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 2px;
+    opacity: 0.6;
+    filter: invert(1);
+}
+
+.search-bar input {
+    background: none;
+    border: none;
+    color: white;
+    width: 100%;
+    outline: none;
+    font-size: 14px;
+    padding-left: 8px;
+}
+
+@keyframes slideDown {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* Profile Button */
+
+.user-profile-button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: transparent;
+    border: none;
+    padding: 12px;
+    margin: 20px auto 0 auto;
+    width: 85%;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    position: relative;
+}
+
+.user-profile-button:hover {
+    background-color: #444;
+}
+
+/* Profile Button Dropdown Elements */
+
+.user-menu {
+    position: fixed;
+    width: 85%;
+    max-width: 212.5px;
+    background-color: transparent;
+    animation: fadeIn 0.3s forwards;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.user-menu-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    cursor: pointer;
+    border-radius: 5px;
+    background-color: #2c2c2c;
+    transition: background-color 0.3s;
+    margin-bottom: 8px;
+    box-sizing: border-box;
+}
+
+.user-menu-item:hover {
+    background-color: #555;
+}
+
+.user-menu-item img {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    filter: invert(1);
+}
+
+.user-menu-item span {
+    color: #e0e0e0;
+    font-weight: normal;
+}
+
+/* Remove the old separator styles */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* General Button Styles */
+
+.sidebar button, .conversation-button {
+    background-color: #333;
+    color: white;
+    border: none;
+    padding: 1em;
+    margin: 0.55em 0;
+    width: 90%;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar button:hover, .conversation-button:hover, .sidebar button.selected, .conversation-button.selected {
+    background-color: #555;
+}

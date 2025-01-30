@@ -1,0 +1,50 @@
+@import url('chat_conversation.css');
+@import url('sidebar.css');
+
+:root {
+    --background-color: #1e1e1e;
+    --text-color: #e0e0e0;
+    
+    /* Component-specific colors */
+
+    --sidebar-background-color: #1e1e1e;
+    --header-background-color: #1e1e1e;
+    --chat-background-color: #1e1e1e;
+    
+    /* Interactive element colors */
+
+    --button-background-color: #444;
+    --button-hover-color: #555;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+button {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+/* Utility Classes */
+
+.hidden {
+    display: none;
+}
+
+.sidebar button:first-child {
+    flex-shrink: 0;
+}

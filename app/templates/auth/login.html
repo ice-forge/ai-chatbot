@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+  <title>Ice Forge - Sign in</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+</head>
+<body>
+    <section>
+        <div class="form-box login">
+            <div class="form-value">
+                {% if error %}
+                <div class="error-message">{{ error }}</div>
+                {% endif %}
+                <form action="{{ url_for('auth.login') }}" method="POST" onsubmit="handleLoginSubmit(event)">
+                    <h2>Sign in</h2>
+                    <div class="inputbox">
+                        <input type="email" name="email" required placeholder=" ">
+                        <label for="email">Email</label>
+                    </div>
+                    <div class="inputbox">
+                        <input type="password" name="password" id="password" required placeholder=" ">
+                        <label for="password">Password</label>
+                        <ion-icon name="eye-outline" class="toggle-password" onclick="togglePasswordVisibility('password')"></ion-icon>
+                    </div>
+                    <div class="link">
+                        <label class="custom-checkbox">
+                            <input type="checkbox" name="remember">
+                            <span class="checkmark"></span>
+                            <span>Remember Me</span>
+                        </label>
+                        <a href="{{ url_for('auth.forgot_password') }}">Forgot Password?</a>
+                    </div>
+                    <button type="submit" id="loginBtn">Sign in</button>
+                    <div class="link center">
+                        <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Register</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</body>
+</html>

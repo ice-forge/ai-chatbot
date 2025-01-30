@@ -1,0 +1,291 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'poppins', sans-serif;
+}
+
+section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    background: url("../images/Firewatch.png") no-repeat center center fixed;
+    background-size: cover;
+}
+
+.form-box {
+    position: relative;
+    background: transparent;
+    border: 2px solid rgba(255,255,255,0.5);
+    border-radius: 20px;
+    backdrop-filter: blur(7.5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 30px rgba(0,0,0,0.3);
+    transition: transform 0.3s ease;
+    overflow: hidden;
+}
+
+.form-box:hover {
+    transform: translateY(-5px);
+}
+
+.form-box.login {
+    width: 450px;
+    height: 500px;
+}
+
+.form-box.register {
+    width: 450px;
+    height: 615px;
+}
+
+.form-box.forgot-password,
+.form-box.confirm-email {
+    width: 400px;
+    height: 375px;
+}
+
+.form-box.reset-password {
+    width: 420px;
+    height: 475px;
+}
+
+h2 {
+    font-size: 2em;
+    color: #fff;
+    text-align: center;
+}
+
+/* Space after headers */
+
+.form-box.login h2,
+.form-box.register h2 {
+    margin-bottom: 10px;
+}
+
+.form-box.forgot-password h2,
+.form-box.reset-password h2,
+.form-box.confirm-email h2 {
+    margin-bottom: 20px;
+}
+
+.form-value {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.form-value form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.inputbox {
+    position: relative;
+    margin: 20px 0;  /* Margin between input boxes */
+    width: 80%;
+    max-width: 310px;
+    border-bottom: 2px solid #fff;
+}
+
+.inputbox label {
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+    color: #fff;
+    font-size: 1em;
+    pointer-events: none;
+    transition: .3s ease all;
+}
+
+.inputbox input:focus ~ label,
+.inputbox input:not(:placeholder-shown) ~ label {
+    top: -15px;
+    transform: translateY(0);
+    color: #fff;
+    font-size: 1em;
+}
+
+.inputbox input {
+    width: 100%;
+    height: 50px;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 1em;
+    padding: 0 35px 0 5px;
+    color: #fff;
+    transition: 0.5s;
+}
+
+.inputbox ion-icon {
+    position: absolute;
+    right: 8px;
+    color: #fff;
+    font-size: 1.2em;
+    top: 20px;
+}
+
+button {
+    margin-top: 0px;  /* Space before buttons */
+    width: 80%;
+    height: 40px;
+    border-radius: 40px;
+    background: white  /* Gradient: (to right, #4776E6, #8E54E9) */;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    color: rgb(14, 27, 55);
+}
+
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(71, 118, 230, 0.5);
+}
+
+.form-box.login button[type="submit"],
+.form-box.register button[type="submit"],
+.form-box.reset-password button[type="submit"],
+.form-box.forgot-password button[type="submit"],
+.form-box.confirm-email button[type="submit"] {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.link {
+    font-size: 0.9em;
+    color: #fff;
+    text-align: center;
+    margin: 15px 0;
+    width: 80%;
+    max-width: 310px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.link a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.link a:hover {
+    text-decoration: underline;
+}
+
+.link.center {
+    justify-content: center;
+}
+
+.custom-checkbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 0.9em;
+    color: #ffffff;
+}
+
+.custom-checkbox input {
+    display: none;
+}
+
+.custom-checkbox .checkmark {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    position: relative;
+    background: transparent;
+    border: 2px solid #fff;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.custom-checkbox .checkmark::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 12px;
+    height: 12px;
+    background: #ffffff;
+    border-radius: 2px;
+    transform: translate(-50%, -50%) scale(1.05);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.custom-checkbox input:checked + .checkmark::after {
+    opacity: 1;
+}
+
+.blurred-background {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+}
+
+.error-message, .success-message, .info-message {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+
+    display: inline-block;
+    width:max-content;
+    min-width: 50%;
+    max-width: 90%;
+    white-space: pre-line;
+
+    text-align: center;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    backdrop-filter: blur(6px);
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+}
+
+@media screen and (max-width: 100%) {
+    .error-message, .success-message, .info-message {
+        white-space: normal;
+        overflow-wrap: break-word;
+    }
+}
+
+.error-message {
+    background: rgba(255, 0, 0, 0.25);
+}
+
+.success-message {
+    background: rgba(0, 255, 0, 0.2);
+}
+
+.info-message {
+    background: rgba(0, 0, 255, 0.2);
+}

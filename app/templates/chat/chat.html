@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chat_conversation.css') }}">
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+</head>
+<body data-conversation-id="{{ conversation_id if conversation_id else '' }}" data-username="{{ username }}">
+    <div class="sidebar">
+        <div class="new_conversation-button" onclick="createConversation()">
+            <span class="new-chat-text">New Chat</span>
+            <div class="new-conversation-ai-icon-container">
+                <img src="{{ url_for('static', filename='images/microsoft_azure.png') }}" alt="New Conversation" class="new-conversation-ai-icon">
+            </div>
+            <img src="{{ url_for('static', filename='images/new_conversation.png') }}" alt="New Conversation" class="new-conversation-icon">
+        </div>
+        <div class="search-container">
+            <div class="search-bar">
+                <img src="{{ url_for('static', filename='images/search.png') }}" alt="Search" class="search-icon">
+                <input type="text" id="search-input" placeholder="Search">
+            </div>
+        </div>
+        <div id="conversation-list">
+            <!-- Conversation buttons will be added here -->
+        </div>
+        <div class="user-profile-button" onclick="toggleUserMenu()">
+            <div class="user-icon" id="user-icon"></div>
+            <span class="username">{{ username }}</span>
+        </div>
+        <div id="user-menu" class="user-menu hidden">
+            <div class="user-menu-item logout-button" onclick="logout()">
+                <img src="{{ url_for('static', filename='images/sign-out.png') }}" alt="Logout">
+                <span>Sign Out</span>
+            </div>
+        </div>
+    </div>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="dropdown">
+                <button id="current-model" onclick="toggleModelDropdown()">Select a model</button>
+                <div class="dropdown-content hidden" id="model-dropdown">
+                    <!-- Model options will be added here -->
+                </div>
+            </div>
+            <div class="utility-buttons">
+                <button id="download-button" onclick="downloadConversation()">
+                    <img src="{{ url_for('static', filename='images/download.png') }}" alt="Download">
+                </button>
+            </div>
+        </div>
+        <div class="chat-content" id="chat-content">
+            <!-- Conversation messages will go here -->
+        </div>
+        <div class="chat-footer">
+            <div id="file-display"></div>
+            <div class="input-bar">
+                <input type="file" id="file-input" class="hidden" multiple onchange="handleFileUpload(event)" accept=".pdf,.txt">
+                <button id="plus-button" onclick="document.getElementById('file-input').click()">
+                    <img src="{{ url_for('static', filename='images/plus.png') }}" alt="Plus">
+                </button>
+                <input type="text" id="message-input" placeholder="Type a message..." oninput="toggleSendButton()" onkeypress="handleKeyPress(event)">
+                <button id="send-button">
+                    <img id="send-icon" src="{{ url_for('static', filename='images/arrow-up.png') }}" alt="Send" class="w-6 h-6">
+                    <img id="cancel-icon" src="{{ url_for('static', filename='images/cancel_animation.png') }}" alt="Cancel" class="w-6 h-6 hidden">
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

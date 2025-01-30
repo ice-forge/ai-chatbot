@@ -1,0 +1,13 @@
+{
+    "models": [
+        {
+            "name": "GPT-4o",
+            "system_prompt": "You are a helpful AI assistant.",
+            "env_endpoint": "AZURE_OPENAI_ENDPOINT",
+            "env_api_key": "AZURE_OPENAI_API_KEY",
+            "handler": "send_message_to_openai",
+            "in_use": true
+        }
+    ],
+    "global_memory": []
+}
