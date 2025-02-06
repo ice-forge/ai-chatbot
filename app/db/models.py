@@ -1,3 +1,5 @@
+import ollama
+
 import requests
 import json
 
@@ -6,11 +8,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-MEMORY = os.getenv('MEMORY', 'False').lower() in ['true', '1', 't']
-FILES = os.getenv('FILES', 'False').lower() in ['true', '1', 't']
+def parse_bool_env(name, default='False'):
+    return os.getenv(name, default).strip().lower() in ['true', '1', 't', 'yes']
 
-LOCAL_MEMORY = os.getenv('LOCAL_MEMORY', 'False').lower() in ['true', '1', 't']
-GLOBAL_MEMORY = os.getenv('GLOBAL_MEMORY', 'False').lower() in ['true', '1', 't']
+MEMORY = parse_bool_env('MEMORY')
+FILES = parse_bool_env('FILES')
+LOCAL_MEMORY = parse_bool_env('LOCAL_MEMORY')
+GLOBAL_MEMORY = parse_bool_env('GLOBAL_MEMORY')
 
 def system_prompt(local_memory, global_memory, files):
     SYSTEM_PROMPT = ""
@@ -102,8 +106,53 @@ def send_message_to_openai(local_memory, global_memory, user_message, model, mod
             "error_type": "general_error"
         }
     
+def send_message_to_llama(local_memory, global_memory, user_message, model, model_prompt = None, files = None):
+    SYSTEM_PROMPT = model_prompt
+
+    if SYSTEM_PROMPT == None:
+        SYSTEM_PROMPT = system_prompt(local_memory, global_memory, files)
+
+    try:
+        ollama.pull('llama3.2:1b')
+
+        stream = ollama.chat(
+            model = 'llama3.2:1b',
+            messages=[
+                {
+                    'role': 'system',
+                    'content': model["system_prompt"]
+                },
+                {
+                    'role': 'user',
+                    'content': f"question: {user_message}. System Prompt: {SYSTEM_PROMPT}"
+                }
+            ],
+            stream = True
+        )
+
+        full_response = ""
+
+        for chunk in stream:
+            content = chunk['message']['content']
+            full_response += content
+
+        return {
+            "status": "success",
+            "response": full_response,
+            "error": None
+        }
+    
+    except Exception as ex:
+        return {
+            "status": "error",
+            "response": "An unexpected error occurred.",
+            "error": str(ex),
+            "error_type": "general_error"
+        }
+    
 MODEL_HANDLERS = {
-    'send_message_to_openai': send_message_to_openai
+    'send_message_to_openai': send_message_to_openai,
+    'send_message_to_llama': send_message_to_llama
 
     # <-- Add your model handlers here by referencing their handler from the `models.json` file, then inserting the name of the model function, listed above -->
 }

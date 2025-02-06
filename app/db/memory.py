@@ -1,9 +1,9 @@
 import os
 import json
 
-from app.db.models import send_message_to_openai, get_model_by_name
+from app.db.models import send_message_to_openai, get_model_by_name, parse_bool_env
 
-MEMORY = os.getenv('MEMORY', 'False').lower() in ['true', '1', 't']
+MEMORY = parse_bool_env('MEMORY')
 
 def should_be_global_memory(memory_item, model):
     system_prompt = """
@@ -70,6 +70,10 @@ def summarize_memory(local_memory, global_memory, user_message, model_name):
 
     summary = send_message_to_openai(local_memory, global_memory, user_message, model, system_prompt)
 
+    return "None"
+
+    print (f"LLama Response: {summary['response']}")
+
     if summary['response'] == "None" or summary['status'] == 'error':
         return "None"
 
@@ -80,7 +84,7 @@ def summarize_memory(local_memory, global_memory, user_message, model_name):
 
             return "None"
         
-        return summary
+        return summary['response']
     
     return "None"
     

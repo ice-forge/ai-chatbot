@@ -56,15 +56,15 @@
         </div>
         <div class="chat-footer">
             <div id="file-display"></div>
-            <div class="input-bar">
-                <input type="file" id="file-input" class="hidden" multiple onchange="handleFileUpload(event)" accept=".pdf,.txt">
+            <div class="message-box">
                 <button id="plus-button" onclick="document.getElementById('file-input').click()">
                     <img src="{{ url_for('static', filename='images/plus.png') }}" alt="Plus">
                 </button>
-                <input type="text" id="message-input" placeholder="Type a message..." oninput="toggleSendButton()" onkeypress="handleKeyPress(event)">
+                <input type="file" id="file-input" class="hidden" multiple onchange="handleFileUpload(event)" accept=".pdf,.txt">
+                <textarea id="message-input" placeholder="Type a message..." oninput="toggleSendButton()" onkeypress="handleKeyPress(event)"></textarea>
                 <button id="send-button">
-                    <img id="send-icon" src="{{ url_for('static', filename='images/arrow-up.png') }}" alt="Send" class="w-6 h-6">
-                    <img id="cancel-icon" src="{{ url_for('static', filename='images/cancel_animation.png') }}" alt="Cancel" class="w-6 h-6 hidden">
+                    <img id="send-icon" src="{{ url_for('static', filename='images/arrow-up.png') }}" alt="Send">
+                    <img id="cancel-icon" src="{{ url_for('static', filename='images/cancel_animation.png') }}" alt="Cancel" class="hidden">
                 </button>
             </div>
         </div>

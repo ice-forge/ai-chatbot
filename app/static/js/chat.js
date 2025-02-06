@@ -118,17 +118,9 @@ function toggleSendButton() {
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
 
-    if (isResponding) {
-        sendButton.disabled = true;
-        sendButton.classList.remove('active');
-
-        return;
-    }
-
-    if (messageInput.value.trim() !== '') {
-        if (!sendButton.classList.contains('cancel-active'))
-            sendButton.classList.add('active');
-    } else
+    if (messageInput.value.trim() !== '')
+        sendButton.classList.add('active');
+    else
         sendButton.classList.remove('active');
 }
 
@@ -226,6 +218,8 @@ function createAIMessage(message, modelName, animate = false) {
         document.getElementById('send-icon').classList.add('hidden');
         document.getElementById('cancel-icon').classList.remove('hidden');
         document.getElementById('send-button').classList.add('cancel-active');
+        document.getElementById('send-button').classList.remove('active');
+        document.getElementById('send-button').disabled = false;
 
         textContent.innerHTML = '';
 
@@ -318,11 +312,14 @@ function finalizeAnimation(container) {
     document.getElementById('send-icon').classList.remove('hidden');
     document.getElementById('cancel-icon').classList.add('hidden');
     document.getElementById('send-button').classList.remove('cancel-active');
+    
+    const messageInput = document.getElementById('message-input');
 
+    if (messageInput.value.trim() !== '')
+        document.getElementById('send-button').classList.add('active');
+    
     isResponding = false;
     toggleSendButton();
-
-    document.getElementById('send-button').disabled = false;
 }
 
 function cancelAnimation() {
@@ -339,10 +336,16 @@ function cancelAnimation() {
     const sendIcon = document.getElementById('send-icon');
     const cancelIcon = document.getElementById('cancel-icon');
     const sendButton = document.getElementById('send-button');
+    const messageInput = document.getElementById('message-input');
 
     sendIcon.classList.remove('hidden');
     cancelIcon.classList.add('hidden');
     sendButton.classList.remove('cancel-active');
+    
+    if (messageInput.value.trim() !== '')
+        sendButton.classList.add('active');
+    else
+        sendButton.classList.remove('active');
 
     isResponding = false;
     toggleSendButton();
@@ -426,8 +429,10 @@ function sendMessage() {
 }
 
 function handleKeyPress(event) {
-    if (event.key === 'Enter' && !isResponding)
+    if (event.key === 'Enter' && !isResponding) {
+        event.preventDefault();
         sendMessage();
+    }
 }
 
 function getConversations() {
@@ -832,4 +837,78 @@ document.addEventListener('DOMContentLoaded', (event) => {
         else
             sendMessage();
     });
-});
+    
+    const messageInput = document.getElementById('message-input');
+    const messageBox = document.querySelector('.message-box');
+
+    const maxHeight = 124;
+
+    messageInput.value = '';
+    messageBox.classList.remove('has-content');
+
+    messageInput.style.height = '24px';
+    messageBox.style.height = '32px';
+
+    messageInput.addEventListener('input', event => {
+        const effectiveLines = getWrapCountUsingCanvas(messageInput);
+
+        const lineHeight = 24;
+        const calculatedHeight = effectiveLines * lineHeight;
+
+        if (calculatedHeight <= maxHeight) {
+            messageInput.style.height = calculatedHeight + 'px';
+            messageInput.style.overflowY = 'hidden';
+
+            messageBox.style.height = (calculatedHeight + 8) + 'px';
+        } else {
+            messageInput.style.height = maxHeight + 'px';
+            messageInput.style.overflowY = 'auto';
+            
+            messageBox.style.height = (maxHeight + 8) + 'px';
+        }
+    });
+}); 
+
+var _buffer;
+
+function getWrapCountUsingCanvas(textarea) {
+    if (_buffer == null) {
+        _buffer = document.createElement('textarea');
+        
+        _buffer.style.border = 'none';
+        _buffer.style.height = '0';
+        _buffer.style.overflow = 'hidden';
+        _buffer.style.padding = '0';
+        _buffer.style.position = 'absolute';
+        _buffer.style.left = '0';
+        _buffer.style.top = '0';
+        _buffer.style.zIndex = '-1';
+
+        document.body.appendChild(_buffer);
+    }
+
+    var cs = window.getComputedStyle(textarea);
+    var pl = parseInt(cs.paddingLeft);
+    var pr = parseInt(cs.paddingRight);
+    var lh = parseInt(cs.lineHeight);
+
+    if (isNaN(lh))
+        lh = parseInt(cs.fontSize);
+
+    _buffer.style.width = (textarea.clientWidth - pl - pr) + 'px';
+    _buffer.style.font = cs.font;
+    _buffer.style.letterSpacing = cs.letterSpacing;
+    _buffer.style.whiteSpace = cs.whiteSpace;
+    _buffer.style.wordBreak = cs.wordBreak;
+    _buffer.style.wordSpacing = cs.wordSpacing;
+    _buffer.style.wordWrap = cs.wordWrap;
+
+    _buffer.value = textarea.value;
+
+    var result = Math.floor(_buffer.scrollHeight / lh);
+
+    if (result == 0)
+        result = 1;
+
+    return result;
+}

@@ -75,90 +75,182 @@
     color: white;
 }
 
-/* Input Bar Styling */
+/* Message Input Styling */
 
-.input-bar {
+.chat-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    margin-bottom: 20px;
+    transition: height 0.2s ease;
+    height: auto;
+}
+
+.message-box {
     display: flex;
     align-items: center;
-    position: relative;
-    width: 95%;
-    margin: 0 auto;
-    padding: 10px;
-    background-color: transparent;
-    border-radius: 25px;
-}
-
-.chat-footer input {
-    flex: 1;
-    padding: 15px 20px;
-    margin: 0;
+    justify-content: center;
+    background-color: #1e1e1e;
     border: 1px solid #666;
     border-radius: 25px;
-    background-color: #1e1e1e;
-    color: white;
-    font-size: 16px;
-    outline: none;
-    padding-left: 55px;
-    padding-right: 60px;
+    padding: 10px;
+    width: 85%;
+    margin: 0 auto;
+    min-height: 32px;
+    height: fit-content;
+    max-height: 120px;
+    transition: height 0.2s ease;
+    overflow: hidden;
+    position: relative;
 }
 
-/* Input Bar Buttons */
+.message-box textarea {
+    display: block;
+    position: relative;
+    width: 100%;
+    flex: 1;
+    margin: 0 45px;
+    line-height: 1.5;
+    padding-right: 4px;
 
-.chat-footer .input-bar button {
+    max-height: 120px;
+    min-height: 24px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    scrollbar-gutter: stable;
+    resize: none;
+    transition: height 0.2s ease;
+
+    font-family: inherit;
+    font-size: 16px;
+    color: white;
+    text-align: left;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+
+    align-items: flex-start;
+    border: none;
+    outline: none;
+    background: transparent;
+}
+
+.message-box textarea:focus {
+    scroll-padding-bottom: 20px;
+    scroll-snap-type: y proximity;
+}
+
+.message-box textarea::after {
+    content: '';
+    display: block;
+    height: 20px;
+    scroll-snap-align: end;
+}
+
+/* Add custom scrollbar to textarea */
+
+.message-box textarea::-webkit-scrollbar {
+    width: 8px;
+}
+
+.message-box textarea::-webkit-scrollbar-track {
+    background: #1e1e1e;
+    border-radius: 10px;
+}
+
+.message-box textarea::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 10px;
+    margin-right: -4px;
+}
+
+.message-box textarea::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+#plus-button,
+#send-button {
+    position: absolute;
+    bottom: 10px;
     width: 35px;
     height: 35px;
     border-radius: 50%;
     background-color: #444;
     border: none;
     cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
     display: flex;
     align-items: center;
     justify-content: center;
-    position: absolute;
-}
-
-#send-button {
-    right: 20px;
+    transition: all 0.3s ease;
+    margin-top: 5px;
+    z-index: 1;
 }
 
 #plus-button {
-    left: 20px;
+    left: 10px;
 }
 
-.chat-footer button img {
-    width: 22.5px;
-    height: 22.5px;
+#send-button {
+    right: 10px;
+    background-color: #444;
+}
+
+#send-button.active {
+    background-color: #fff;
+}
+
+#send-button.active #send-icon {
+    filter: invert(0%);
+}
+
+#send-button.cancel-active {
+    background-color: #444;
+    cursor: pointer;
+    opacity: 1;
+}
+
+#send-button.cancel-active:hover {
+    background-color: #666 !important;
+}
+
+#send-button.cancel-active #cancel-icon {
+    filter: invert(100%);
+}
+
+#send-button:disabled {
+    cursor: not-allowed;
+}
+
+#plus-button:hover,
+#send-button:hover,
+#send-button.cancel-active:hover {
+    background-color: #666;
+}
+
+#send-button.active:hover {
+    background-color: #fff;
+    opacity: 0.95;
 }
 
 #plus-button img {
     filter: invert(100%);
 }
 
+#send-button img {
+    width: 20px;
+    height: 20px;
+}
+
 #send-icon {
-    filter: invert(10%);
+    filter: invert(100%);
 }
 
 #cancel-icon {
     filter: invert(100%);
 }
 
-.chat-footer button.active {
-    background-color: white;
-    color: #444;
-}
-
-.chat-footer button.active:hover {
-    background-color: #e0e0e0;
-}
-
-.chat-footer button.cancel-active {
-    background-color: #444;
-    color: white;
-}
-
-.chat-footer button.cancel-active:hover {
-    background-color: #555;
+.message-box textarea::placeholder {
+    text-align: left;
 }
 
 /* Chat Container & Content Area */
@@ -370,10 +462,6 @@
     flex-shrink: 0;
     margin: 0 4px;
     height: 24px;
-}
-
-.chat-footer {
-    padding: 15px 0;
 }
 
 .remove-circle {

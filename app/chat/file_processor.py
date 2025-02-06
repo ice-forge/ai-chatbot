@@ -71,7 +71,6 @@ def remove_file_from_conversation(filename, conversation_id, user_id):
     incoming_files = conversation.get('incoming_files', [])
     attached_files = conversation.get('attached_files', [])
 
-    # Only remove from incoming_files
     incoming_files = [f for f in incoming_files if f['filename'] != filename]
 
     save_conversation(
