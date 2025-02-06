@@ -141,9 +141,12 @@ function createUserMessage(message, username, modelName, files = []) {
     userInfo.innerText = username;
 
     const textContent = document.createElement('div');
-
     textContent.className = 'message-content';
-    textContent.innerText = message;
+    
+    if (message.indexOf('<tag>') !== -1)
+        textContent.innerHTML = renderTags(message);
+    else
+        textContent.innerText = message;
 
     const messageHeader = document.createElement('div');
 
@@ -201,6 +204,11 @@ function createAIMessage(message, modelName, animate = false) {
 
     const textContent = document.createElement('div');
     textContent.className = 'message-content';
+    
+    if (message.indexOf('<tag>') !== -1)
+        textContent.innerHTML = renderTags(message);
+    else
+        textContent.innerText = message;
 
     const formattedMessage = message;
     textContent.setAttribute('data-full-text', formattedMessage);
@@ -361,12 +369,44 @@ function getUserInitials(username = '') {
     return (firstInitial + lastInitial).toUpperCase();
 }
 
+function processTags(message) {
+    const whitelist = ['research', 'canvas', 'graph'];
+
+    return message.replace(/@(\w+)/g, (match, word) => {
+        if (whitelist.includes(word))
+            return `<tag>${word}</tag>`;
+        
+        return match;
+    });
+}
+
+function cleanTags(message) {
+    return message.replace(/<\/?tag>/g, '');
+}
+
+const tagColorTable = {
+    "research": 'rgba(153, 119, 252, 0.3)',  // purple
+    "canvas": 'rgba(111, 119, 252, 0.3)',    // blue
+    "graph": 'rgba(107, 246, 162, 0.3)'      // green
+};
+
+function renderTags(message) {
+    return message.replace(/<tag>(.*?)<\/tag>/g, (match, word) => {
+        const color = tagColorTable[word.toLowerCase()] || '#e0e0e0';
+        return `<span class="tagged-text" style="background-color: ${color};">@${word}</span>`;
+    });
+}
+
 function sendMessage() {
     const messageInput = document.getElementById('message-input');
-    const message = messageInput.value.trim();
+    let message = messageInput.value.trim();
+    
+    message = processTags(message);
+    
+    const plainMessage = message;
     const selectedModel = document.getElementById('current-model').innerText;
 
-    if (message === '' || !currentConversationId || isResponding)
+    if (plainMessage === '' || !currentConversationId || isResponding)
         return;
 
     const fileDisplay = document.getElementById('file-display');
@@ -375,8 +415,8 @@ function sendMessage() {
         extension: file.querySelector('.file-icon').innerText,
         color: file.querySelector('.file-icon').style.backgroundColor
     }));
-
-    const userMessageElement = createUserMessage(message, username, selectedModel, files);
+    
+    const userMessageElement = createUserMessage(plainMessage, username, selectedModel, files);
     const chatContent = document.getElementById('chat-content');
 
     chatContent.appendChild(userMessageElement);
@@ -404,7 +444,7 @@ function sendMessage() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
-            message, 
+            message: plainMessage,
             conversation_id: currentConversationId, 
             model: selectedModel,
             files: files
@@ -717,9 +757,9 @@ function adjustFooterHeight() {
 
 function initializeUserIcon() {
     const colors = [
-        '#f47247', // Orange
+        '#f47247',  // Orange
         '#5856d6',  // Indigo
-        '#3A86FF'  // Blue
+        '#3A86FF'   // Blue
     ];
 
     const userColor = colors[Math.floor(Math.random() * colors.length)];
