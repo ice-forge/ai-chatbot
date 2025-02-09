@@ -5,6 +5,9 @@ from app.db.models import send_message_to_openai, get_model_by_name, parse_bool_
 
 MEMORY = parse_bool_env('MEMORY')
 
+ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../" * 2))
+LOCAL_STORAGE_PATH = os.path.join(ROOT_PATH, "storage")
+
 def should_be_global_memory(memory_item, model):
     system_prompt = """
         You are a helpful AI assistant that determines if this information stored as a memory should be global (available to all conversations in an ai chatbot application) or remain local to the current conversation.
@@ -27,6 +30,8 @@ def is_duplicate_memory(memory_item, local_memory, global_memory):
     return memory_item in local_memory or memory_item in global_memory
 
 def summarize_memory(local_memory, global_memory, user_message, model_name):
+    return "None"
+    
     if not MEMORY:
         return "None"
     
@@ -70,8 +75,6 @@ def summarize_memory(local_memory, global_memory, user_message, model_name):
 
     summary = send_message_to_openai(local_memory, global_memory, user_message, model, system_prompt)
 
-    return "None"
-
     print (f"LLama Response: {summary['response']}")
 
     if summary['response'] == "None" or summary['status'] == 'error':
@@ -89,11 +92,15 @@ def summarize_memory(local_memory, global_memory, user_message, model_name):
     return "None"
     
 def load_global_memory():
-    with open(os.path.join(os.path.dirname(__file__), '../storage/db/models.json'), 'r') as f:
+    models_path = os.path.join(LOCAL_STORAGE_PATH, "models.json")
+
+    with open(models_path, 'r') as f:
         return json.load(f).get('global_memory', [])
 
 def save_global_memory(global_memory):
-    with open(os.path.join(os.path.dirname(__file__), '../storage/db/models.json'), 'r+') as f:
+    models_path = os.path.join(LOCAL_STORAGE_PATH, "models.json")
+
+    with open(models_path, 'r+') as f:
         data = json.load(f)
         data['global_memory'] = global_memory
         

@@ -1,19 +1,21 @@
 import json
 import os
 
-LOCAL_STORAGE_PATH = 'app/storage/users'
+ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../" * 2))
+LOCAL_STORAGE_PATH = os.path.join(ROOT_PATH, "storage")
+
 INDENT = 4
 
-if not os.path.exists(LOCAL_STORAGE_PATH):
-    os.makedirs(LOCAL_STORAGE_PATH)
+users_path = os.path.join(LOCAL_STORAGE_PATH, "users.json")
 
-    with open(f'{LOCAL_STORAGE_PATH}/users.json', 'w') as file:
-        json.dump([], file, indent = INDENT)
+if not os.path.exists(users_path):
+    with open(users_path, 'w') as file:
+        json.dump([], file, indent=INDENT)
 
 def load_users():
-    with open(f'{LOCAL_STORAGE_PATH}/users.json', 'r') as file:
+    with open(users_path, 'r') as file:
         return json.load(file)
 
 def save_users(users):
-    with open(f'{LOCAL_STORAGE_PATH}/users.json', 'w') as file:
+    with open(users_path, 'w') as file:
         json.dump(users, file, indent = INDENT)

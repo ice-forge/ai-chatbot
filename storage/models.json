@@ -4,14 +4,11 @@
             "name": "GPT-4o",
             "env_endpoint": "AZURE_OPENAI_ENDPOINT",
             "env_api_key": "AZURE_OPENAI_API_KEY",
+            "env_api_version": "AZURE_OPENAI_API_VERSION",
+            "env_deployment_name": "AZURE_OPENAI_DEPLOYMENT_NAME",
             "handler": "send_message_to_openai",
-            "in_use": true
-        },
-        {
-            "name": "LLama 3.2:1b",
-            "system_prompt": "You are a helpful AI assistant.",
-            "handler": "send_message_to_llama",
-            "in_use": true
+            "in_use": true,
+            "supports_tools": true
         }
     ],
     "global_memory": []

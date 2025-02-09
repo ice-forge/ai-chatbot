@@ -1,4 +1,3 @@
-
 from flask import Blueprint, redirect, url_for, session
 
 main = Blueprint('main', __name__)

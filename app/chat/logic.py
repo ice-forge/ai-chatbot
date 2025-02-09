@@ -6,7 +6,10 @@ from app.db.memory import summarize_memory
 
 models = load_models()
 
-def handle_send_message(user_id, conversation_id, user_message, selected_model, files=[], display_files=[]):
+def handle_send_message(user_id, conversation_id, user_message, selected_model, files=[], display_files=[], tools=None):
+    if tools is None:
+        tools = []
+
     try:
         data = get_conversation(user_id, conversation_id)
 
@@ -42,18 +45,23 @@ def handle_send_message(user_id, conversation_id, user_message, selected_model, 
 
         conversation.append({
             "role": "user", 
+            "tools": tools, 
             "content": [{"type": "text", "text": user_message}], 
             "files": display_files
         })
 
-        result = send_message_to_model(local_memory, global_memory, user_message, selected_model, files)
+        result = send_message_to_model(local_memory, global_memory, user_message, selected_model, files, tools)
+
+        if "tools" not in result:
+            result["tools"] = {}
 
         if result["status"] == "success":
             result["response"] = format_ai_message(result["response"])
 
         conversation.append({
             "role": "system", 
-            "content": [{"type": "text", "text": result["response"]}], 
+            "tools": result["tools"],
+            "content": [{"type": "text", "text": result['response']}], 
             "model": selected_model
         })
 
@@ -83,17 +91,21 @@ def handle_send_message(user_id, conversation_id, user_message, selected_model, 
             incoming_files = data['incoming_files']
         )
 
-        return result
+        return {
+            "status": result["status"],
+            "response": result["response"],
+            "tools": result["tools"]
+        }
 
     except Exception as e:
         return {
             "status": "error",
-            "response": "An error occurred while processing your message.",
+            "response": f"An error occurred while processing your message.\n\n{str(e)}",
             "error": str(e),
             "error_type": "processing_error"
         }
 
-def send_message_to_model(local_memory, global_memory, user_message, model_name, files):
+def send_message_to_model(local_memory, global_memory, user_message, model_name, files, tools):
     model = get_model_by_name(model_name)
 
     if not model:
@@ -103,6 +115,9 @@ def send_message_to_model(local_memory, global_memory, user_message, model_name,
             "error": "No model selected",
             "error_type": "model_selection"
         }
+
+    if not model.get('supports_tools', False):
+        tools = None
 
     handler_name = model.get('handler')
     handler = MODEL_HANDLERS.get(handler_name)
@@ -115,4 +130,4 @@ def send_message_to_model(local_memory, global_memory, user_message, model_name,
             "error_type": "handler_not_found"
         }
     
-    return handler(local_memory, global_memory, user_message, model, files=files)
+    return handler(local_memory, global_memory, user_message, model, files=files, tools=tools)

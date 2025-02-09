@@ -7,6 +7,11 @@ let currentContextMenuId = null;
 let animationTimeouts = [];
 let isResponding = false;
 
+let availableTools = ['graph', 'research']; // the full set
+let selectedTools = [];
+
+let activeSuggestions = [];
+
 function logout() {
     if (confirm("Are you sure you want to log out?")) {
         fetch('/auth/logout', {
@@ -27,7 +32,6 @@ function toggleUserMenu() {
 
     if (!menu.classList.contains('hidden')) {
         const buttonRect = button.getBoundingClientRect();
-        const sidebarRect = document.querySelector('.sidebar').getBoundingClientRect();
         
         menu.style.left = `${buttonRect.left}px`;
         menu.style.bottom = `${window.innerHeight - buttonRect.top}px`;
@@ -143,10 +147,7 @@ function createUserMessage(message, username, modelName, files = []) {
     const textContent = document.createElement('div');
     textContent.className = 'message-content';
     
-    if (message.indexOf('<tag>') !== -1)
-        textContent.innerHTML = renderTags(message);
-    else
-        textContent.innerText = message;
+    textContent.innerText = message;
 
     const messageHeader = document.createElement('div');
 
@@ -205,10 +206,7 @@ function createAIMessage(message, modelName, animate = false) {
     const textContent = document.createElement('div');
     textContent.className = 'message-content';
     
-    if (message.indexOf('<tag>') !== -1)
-        textContent.innerHTML = renderTags(message);
-    else
-        textContent.innerText = message;
+    textContent.innerText = message;
 
     const formattedMessage = message;
     textContent.setAttribute('data-full-text', formattedMessage);
@@ -363,48 +361,34 @@ function cancelAnimation() {
 
 function getUserInitials(username = '') {
     const names = username.split(' ');
+
     const firstInitial = names[0] ? names[0][0] : '';
     const lastInitial = names[1] ? names[1][0] : '';
 
     return (firstInitial + lastInitial).toUpperCase();
 }
 
-function processTags(message) {
-    const whitelist = ['research', 'canvas', 'graph'];
-
-    return message.replace(/@(\w+)/g, (match, word) => {
-        if (whitelist.includes(word))
-            return `<tag>${word}</tag>`;
-        
-        return match;
-    });
+function getSelectedTools() {
+    return selectedTools;
 }
 
-function cleanTags(message) {
-    return message.replace(/<\/?tag>/g, '');
-}
+function resetTools() {
+    selectedTools = [];
+    availableTools = ['graph', 'research'];
 
-const tagColorTable = {
-    "research": 'rgba(153, 119, 252, 0.3)',  // purple
-    "canvas": 'rgba(111, 119, 252, 0.3)',    // blue
-    "graph": 'rgba(107, 246, 162, 0.3)'      // green
-};
-
-function renderTags(message) {
-    return message.replace(/<tag>(.*?)<\/tag>/g, (match, word) => {
-        const color = tagColorTable[word.toLowerCase()] || '#e0e0e0';
-        return `<span class="tagged-text" style="background-color: ${color};">@${word}</span>`;
-    });
+    updateToolSuggestions([]);
 }
 
 function sendMessage() {
     const messageInput = document.getElementById('message-input');
+    const messageBox = document.querySelector('.message-box');
+
     let message = messageInput.value.trim();
     
-    message = processTags(message);
-    
     const plainMessage = message;
+
     const selectedModel = document.getElementById('current-model').innerText;
+    const tools = getSelectedTools();
 
     if (plainMessage === '' || !currentConversationId || isResponding)
         return;
@@ -422,6 +406,9 @@ function sendMessage() {
     chatContent.appendChild(userMessageElement);
     chatContent.scrollTop = chatContent.scrollHeight;
 
+    messageInput.style.height = '24px';
+    messageBox.style.height = '32px';
+
     messageInput.value = '';
 
     toggleSendButton();
@@ -438,6 +425,9 @@ function sendMessage() {
 
     isResponding = true;
 
+    if (tools.includes('graph'))
+        initializeDesmosCalculator();
+
     fetch('/send_message', {
         method: 'POST',
         headers: {
@@ -447,7 +437,8 @@ function sendMessage() {
             message: plainMessage,
             conversation_id: currentConversationId, 
             model: selectedModel,
-            files: files
+            files: files,
+            tools: tools
         })
     })
     .then(response => response.json())
@@ -458,18 +449,28 @@ function sendMessage() {
         chatContent.appendChild(aiMessageElement);
         chatContent.scrollTop = chatContent.scrollHeight;
 
-        if (!isError) {
-            isResponding = true;
+        if (data.response.tools && data.response.tools.graph)
+            plotGraph(data.response.tools.graph);
+
+        isResponding = false;
+
+        if (!isError)
             toggleSendButton();
-        } else {
-            isResponding = false;
+        else
             sendButton.disabled = false;
-        }
+
+        resetTools();
+    })
+    .catch(error => {
+        isResponding = false;
+        sendButton.disabled = false;
+
+        console.error('Error sending message:', error);
     });
 }
 
 function handleKeyPress(event) {
-    if (event.key === 'Enter' && !isResponding) {
+    if (event.key === 'Enter' && !event.shiftKey) {
         event.preventDefault();
         sendMessage();
     }
@@ -829,7 +830,75 @@ function downloadConversation() {
             } else
                 alert('Conversation not found');
         })
-        .catch(error => alert('Error downloading conversation: ', error));
+        .catch(
+            error => alert('Error downloading conversation: ', error)
+        );
+}
+
+function handleToolSuggestions(event) {
+    const messageInput = event.target;
+    const value = messageInput.value;
+    
+    const caretPos = messageInput.selectionStart;
+    const atIndex = value.lastIndexOf('@');
+
+    const suggestionsDiv = document.getElementById('tools-backdrop');
+
+    if (atIndex !== -1 && caretPos > atIndex) {
+        const postAt = value.substring(atIndex + 1, caretPos);
+        
+        suggestionsDiv.classList.remove('hidden');
+        toggleToolsBackdrop(true);
+        
+        const matchedTools = availableTools.filter(tool => tool.startsWith(postAt));
+        activeSuggestions = matchedTools;
+        
+        updateToolSuggestions(matchedTools);
+    } else {
+        suggestionsDiv.classList.add('hidden');
+        toggleToolsBackdrop(false);
+    }
+}
+
+function updateToolSuggestions(tools) {
+    const suggestionsList = document.getElementById('tool-suggestions-list');
+    suggestionsList.innerHTML = '';
+
+    tools.forEach(tool => {
+        const button = document.createElement('button');
+        const iconSpan = document.createElement('span');
+
+        iconSpan.className = 'tool-icon';
+        iconSpan.innerHTML = '🔧';
+        
+        const labelSpan = document.createElement('span');
+
+        labelSpan.className = 'tool-label';
+        labelSpan.innerText = tool;
+
+        button.appendChild(iconSpan);
+        button.appendChild(labelSpan);
+
+        button.onclick = () => {
+            selectedTools.push(tool);
+            availableTools = availableTools.filter(t => t !== tool);
+
+            activeSuggestions = activeSuggestions.filter(t => t !== tool);
+
+            updateToolSuggestions(activeSuggestions);
+        };
+
+        suggestionsList.appendChild(button);
+    });
+}
+
+function toggleToolsBackdrop(show) {
+    const toolsBackdrop = document.getElementById('tools-backdrop');
+    
+    if (show)
+        toolsBackdrop.classList.remove('hidden');
+    else
+        toolsBackdrop.classList.add('hidden');
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
@@ -906,6 +975,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
             
             messageBox.style.height = (maxHeight + 8) + 'px';
         }
+    });
+
+    messageInput.addEventListener('input', handleToolSuggestions);
+
+    document.getElementById('plus-button').addEventListener('click', () => toggleToolsBackdrop(true));
+    document.addEventListener('click', (event) => {
+        if (!event.target.closest('.message-box') && !event.target.closest('#tools-backdrop'))
+            toggleToolsBackdrop(false);
     });
 }); 
 

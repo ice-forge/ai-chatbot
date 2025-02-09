@@ -16,6 +16,9 @@ from app.db.memory import load_global_memory
 
 chat = Blueprint('chat', __name__)
 
+ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../" * 2))
+LOCAL_STORAGE_PATH = os.path.join(ROOT_PATH, "storage")
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -99,6 +102,7 @@ def send_message():
         user_message = request.json.get('message')
         selected_model = request.json.get('model')
         display_files = request.json.get('files', [])
+        user_tools = request.json.get('tools', [])
 
         ai_files = [{
             'name': file['filename'],
@@ -118,10 +122,11 @@ def send_message():
             user_message = user_message, 
             selected_model = selected_model, 
             files = ai_files,
-            display_files = conversation_files
+            display_files = conversation_files,
+            tools = user_tools
         )
         
-        return jsonify({'response': ai_response})
+        return jsonify({'response': ai_response, 'tools': None})
 
 @chat.route('/get_memory/<conversation_id>', methods = ['GET'])
 @login_required
@@ -189,9 +194,11 @@ def remove_file():
 @login_required
 def get_models():
     if request.method == 'GET':
-        with open(os.path.join(os.path.dirname(__file__), '../storage/db/models.json'), 'r') as f:
-            data = json.load(f)
+        models_path = os.path.join(LOCAL_STORAGE_PATH, "models.json")
 
+        with open(models_path, 'r') as f:
+            return json.load(f)
+        
         return jsonify({
             'models': data['models']
         })

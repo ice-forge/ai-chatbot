@@ -4,8 +4,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-from ..db.user_utils import load_users, save_users
-from .smtp_utils import send_smtp_email
+from app.db.user_utils import load_users, save_users
+from app.auth.smtp_utils import send_smtp_email
 
 import uuid
 from datetime import datetime, timedelta, timezone

@@ -3,11 +3,10 @@ from app.db.memory import load_global_memory, save_global_memory
 import json
 import os
 
-LOCAL_STORAGE_PATH = os.path.join(os.path.dirname(__file__), '../storage/conversations')
-INDENT = 4
+ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../" * 2))
+LOCAL_STORAGE_PATH = os.path.join(ROOT_PATH, "storage/conversations")
 
-if not os.path.exists(LOCAL_STORAGE_PATH):
-    os.makedirs(LOCAL_STORAGE_PATH)
+INDENT = 4
 
 def read_conversation_file(path):
     if (os.path.exists(path)):
